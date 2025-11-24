@@ -15,7 +15,7 @@ void UValueGauge::SetValue(float NewValue, float NewMaxValue)
 {
 	if (NewMaxValue == 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Value Guage: %s, NewMaxValue can't be 0"), *GetName());
+		UE_LOG(LogTemp, Warning, TEXT("Value Gauge: %s, NewMaxValue can't be 0"), *GetName());
 		return;
 	}
 
