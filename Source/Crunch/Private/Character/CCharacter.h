@@ -46,8 +46,18 @@ private:
 	/*                              UI                                    */
 	/**********************************************************************/
 private:
-	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")
+	UPROPERTY(VisibleDefaultsOnly, Category = "UI")
 	class UWidgetComponent* OverHeadWidgetComponent;
 	void ConfigureOverHeadStatusWidget();
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	float HeadStatGaugeVisibilityCheckUpdateGap = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	float HeadStatGaugeVisibilityRangeSquared = 10000000.f;
+
+	FTimerHandle HeadStatGaugeVisibilityUpdateTimerHandle;
+
+	void UpdateHeadGaugeVisibility();
 	
 };
