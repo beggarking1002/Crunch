@@ -13,5 +13,12 @@ UCLASS()
 class UOverHeadStatsGauge : public UUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	void ConfigureWithASC(class UAbilitySystemComponent* AbilitySystemComponent);
+private:
+	UPROPERTY(meta=(BindWidget))
+	class UValueGauge* HealthBar;
+
+	UPROPERTY(meta=(BindWidget))
+	class UValueGauge* ManaBar;
 };
