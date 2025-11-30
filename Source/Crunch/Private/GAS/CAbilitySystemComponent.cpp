@@ -3,7 +3,13 @@
 
 #include "GAS/CAbilitySystemComponent.h"
 
+#include "CAttributeSet.h"
 #include "Camera/CameraLensEffectInterface.h"
+
+UCAbilitySystemComponent::UCAbilitySystemComponent()
+{
+	GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetHealthAttribute()).AddUObject(this, &UCAbilitySystemComponent::HealthUpdated);
+}
 
 void UCAbilitySystemComponent::ApplyInitialEffects()
 {
@@ -30,5 +36,15 @@ void UCAbilitySystemComponent::GiveInitialAbilities()
 	for (const TPair<ECAbilityInputID,TSubclassOf<UGameplayAbility>>& AbilityPair : BasicAbilities)
 	{
 		GiveAbility(FGameplayAbilitySpec(AbilityPair.Value, 1, (int32)AbilityPair.Key, nullptr));
+	}
+}
+
+void UCAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& ChangeData)
+{
+	if (!GetOwner()) return;
+	if (ChangeData.NewValue <= 0 && GetOwner()->HasAuthority()&&DeathEffect)
+	{
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(DeathEffect, 1, MakeEffectContext());
+		ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 	}
 }
