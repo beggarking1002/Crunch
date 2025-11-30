@@ -2,8 +2,11 @@
 
 
 #include "Character/CCharacter.h"
+
+#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/CAbilitySystemComponent.h"
 #include "GAS/CAbilitySystemStatics.h"
 #include "GAS/CAttributeSet.h"
@@ -132,9 +135,35 @@ void ACCharacter::UpdateHeadGaugeVisibility()
 	}
 }
 
+void ACCharacter::SetStatusGaugeEnabled(bool bIsEnabled)
+{
+	GetWorldTimerManager().ClearTimer(HeadStatGaugeVisibilityUpdateTimerHandle);
+	if (bIsEnabled)
+	{
+		ConfigureOverHeadStatusWidget();
+	}
+	else
+	{
+		OverHeadWidgetComponent->SetHiddenInGame(true);
+	}
+}
+
+void ACCharacter::PlayDeathAnimation()
+{
+	if (DeathMontage)
+	{
+		PlayAnimMontage(DeathMontage);
+	}
+}
+
 void ACCharacter::StartDeathSequence()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Dead"));
+	OnDead();
+	PlayDeathAnimation();
+	SetStatusGaugeEnabled(false);
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 
 }
@@ -142,5 +171,14 @@ void ACCharacter::StartDeathSequence()
 void ACCharacter::Respawn()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Respawn"));
+	OnRespawn();
+}
+
+void ACCharacter::OnDead()
+{
+}
+
+void ACCharacter::OnRespawn()
+{
 }
 
