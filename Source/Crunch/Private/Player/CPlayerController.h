@@ -41,6 +41,6 @@ private:
 	UPROPERTY()
 	class UGameplayWidget* GameplayWidget;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FGenericTeamId TeamID;
 };
