@@ -50,6 +50,7 @@ void ACCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	ConfigureOverHeadStatusWidget();
+	MeshRelativeTransform = GetMesh()->GetRelativeTransform();
 }
 
 void ACCharacter::PossessedBy(AController* NewController)
@@ -148,11 +149,34 @@ void ACCharacter::SetStatusGaugeEnabled(bool bIsEnabled)
 	}
 }
 
+void ACCharacter::DeathMontageFinished()
+{
+	SetRagdollEnabled(true);
+}
+
+void ACCharacter::SetRagdollEnabled(bool bIsEnabled)
+{
+	if (bIsEnabled)
+	{
+		GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	}
+	else
+	{
+		GetMesh()->SetSimulatePhysics(false);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		GetMesh()->SetRelativeTransform(MeshRelativeTransform);
+	}
+}
+
 void ACCharacter::PlayDeathAnimation()
 {
 	if (DeathMontage)
 	{
-		PlayAnimMontage(DeathMontage);
+		float MontageDuration = PlayAnimMontage(DeathMontage);
+		GetWorldTimerManager().SetTimer(DeathMontageTimerHandle, this, &ACCharacter::DeathMontageFinished, MontageDuration + DeathMontageFinishTimeShift);
 	}
 }
 
@@ -172,6 +196,7 @@ void ACCharacter::Respawn()
 {
 	
 	OnRespawn();
+	SetRagdollEnabled(false);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
