@@ -15,7 +15,7 @@ APlayerController* ACGameMode::SpawnPlayerController(ENetRole InRemoteRole, cons
 	{
 		NewPlayerTeamInterface->SetGenericTeamId(TeamId);
 	}
-	NewPlayerController->StartSpot = FIndNextStartSpotForTeam(TeamId);
+	NewPlayerController->StartSpot = FindNextStartSpotForTeam(TeamId);
 	return NewPlayerController;
 }
 
@@ -26,9 +26,9 @@ FGenericTeamId ACGameMode::GetTeamIDForPlayer(const APlayerController* PlayerCon
 	return FGenericTeamId(PlayerCount % 2);
 }
 
-AActor* ACGameMode::FIndNextStartSpotForTeam(const FGenericTeamId& TeamID) const
+AActor* ACGameMode::FindNextStartSpotForTeam(const FGenericTeamId& TeamID) const
 {
-	const FName* StartSpotTag = TeamStartSoptTagMap.Find(TeamID);
+	const FName* StartSpotTag = TeamStartSpotTagMap.Find(TeamID);
 	if (!StartSpotTag)
 	{
 		return nullptr;
