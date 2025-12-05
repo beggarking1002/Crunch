@@ -85,6 +85,7 @@ void AMinionBarrack::SpawnNewMinions(int Amt)
 		AMinion* NewMinion = GetWorld()->SpawnActorDeferred<AMinion>(MinionClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 		NewMinion->SetGenericTeamId(BarrackTeamId);
 		NewMinion->FinishSpawning(SpawnTransform);
+		NewMinion->SetGoal(Goal);
 		MinionPool.Add(NewMinion);
 	}
 }
