@@ -15,6 +15,10 @@ class AMinion : public ACCharacter
 	GENERATED_BODY()
 public:
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamId) override;
+
+	bool IsActive() const;
+	void Activate();
+	
 private:
 	void PickSkinBasedOnTeamID();
 
