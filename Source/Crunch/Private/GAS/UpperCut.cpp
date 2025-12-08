@@ -3,6 +3,8 @@
 
 #include "GAS/UpperCut.h"
 
+#include "GameplayTagsManager.h"
+#include "GA_Combo.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
@@ -28,6 +30,7 @@ void UUpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		WaitLaunchEventTask->EventReceived.AddDynamic(this, &UUpperCut::StartLaunching);
 		WaitLaunchEventTask->ReadyForActivation();
 	}
+	NextComboName = NAME_None;
 }
 
 FGameplayTag UUpperCut::GetUpperCutLaunchTag()
@@ -47,4 +50,24 @@ void UUpperCut::StartLaunching(FGameplayEventData EventData)
 			ApplyGameplayEffectToHitResultActor(HitResult, LaunchDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 		}
 	}
+	UAbilityTask_WaitGameplayEvent* WaitComboChangeEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, UGA_Combo::GetComboChangedEventTag(), nullptr, false, false);
+	WaitComboChangeEvent->EventReceived.AddDynamic(this, &UUpperCut::HandleComboChangeEvent);
+	WaitComboChangeEvent->ReadyForActivation();
+}
+
+void UUpperCut::HandleComboChangeEvent(FGameplayEventData EventData)
+{
+	FGameplayTag EventTag = EventData.EventTag;
+	if (EventTag == UGA_Combo::GetComboChangedEventEndTag())
+	{
+		NextComboName = NAME_None;
+		UE_LOG(LogTemp, Warning, TEXT("Next Combo is cleared"));
+		return;
+	}
+
+	TArray<FName> TagNames;
+	UGameplayTagsManager::Get().SplitGameplayTagFName(EventTag, TagNames);
+
+	NextComboName = TagNames.Last();
+	UE_LOG(LogTemp, Warning, TEXT("Next Combo is: %s"), *NextComboName.ToString());
 }
