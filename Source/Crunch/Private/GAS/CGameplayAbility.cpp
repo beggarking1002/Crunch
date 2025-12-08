@@ -4,6 +4,7 @@
 #include "GAS/CGameplayAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "CAbilitySystemStatics.h"
 #include "GAP_Launched.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -16,6 +17,11 @@ class UAnimInstance* UCGameplayAbility::GetOwnerAnimInstance() const
 		return OwnerSkeletalMeshComp->GetAnimInstance();
 	}
 	return nullptr;
+}
+
+UCGameplayAbility::UCGameplayAbility()
+{
+	ActivationBlockedTags.AddTag(UCAbilitySystemStatics::GetStunStatTag());
 }
 
 TArray<FHitResult> UCGameplayAbility::GetHitResultFromSweepLocationTargetData(const FGameplayAbilityTargetDataHandle& TargetDataHandle, float SphereSweepRadius, ETeamAttitude::Type TargetTeam, bool bDrawDebug, bool bIgnoreSelf) const
