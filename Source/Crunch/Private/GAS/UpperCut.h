@@ -16,12 +16,16 @@ class UUpperCut : public UCGameplayAbility
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+	UUpperCut();
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Launch")
 	TSubclassOf<UGameplayEffect> LaunchDamageEffect;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Launch")
 	float UpperCutLaunchSpeed = 1000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Launch")
+	float UpperComboHoldSpeed = 100.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	float TargetSweepSphereRadius = 80.f;
@@ -36,6 +40,12 @@ private:
 
 	UFUNCTION()
 	void HandleComboChangeEvent(FGameplayEventData EventData);
+
+	UFUNCTION()
+	void HandleComboCommitEvent(FGameplayEventData EventData);
+
+	UFUNCTION()
+	void HandleComboDamageEvent(FGameplayEventData EventData);
 
 	FName NextComboName;
 };
