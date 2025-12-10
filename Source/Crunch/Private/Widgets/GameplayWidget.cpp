@@ -2,6 +2,8 @@
 
 
 #include "Widgets/GameplayWidget.h"
+
+#include "AbilityListView.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ValueGauge.h"
 #include "GAS/CAttributeSet.h"
@@ -21,4 +23,5 @@ void UGameplayWidget::NativeConstruct()
 
 void UGameplayWidget::ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<class UGameplayAbility>>& Abilities)
 {
+	AbilityListView->ConfigureAbilities(Abilities);
 }

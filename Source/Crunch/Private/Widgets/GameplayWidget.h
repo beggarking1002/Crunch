@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "AbilitySystemComponent.h"
+#include "GAS/CGameplayAbilityTypes.h"
 #include "GameplayWidget.generated.h"
 
 /**
@@ -24,6 +24,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	class UValueGauge* ManaBar;
+
+	UPROPERTY(meta=(BindWidget))
+	class UAbilityListView* AbilityListView;
 
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
