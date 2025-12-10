@@ -16,6 +16,7 @@ class UGameplayWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
+	void ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<class UGameplayAbility>>& Abilities);
 	
 private:
 	UPROPERTY(meta=(BindWidget))

@@ -58,6 +58,11 @@ void ACCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 
 }
 
+const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& ACCharacter::GetAbilities() const
+{
+	return CAbilitySystemComponent->GetAbilities();
+}
+
 // Called when the game starts or when spawned
 void ACCharacter::BeginPlay()
 {

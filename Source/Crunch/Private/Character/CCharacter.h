@@ -21,7 +21,8 @@ public:
 	void ClientSideInit();
 	bool IsLocallyControlledByPlayer() const;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

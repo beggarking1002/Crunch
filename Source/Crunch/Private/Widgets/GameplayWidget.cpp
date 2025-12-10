@@ -18,3 +18,7 @@ void UGameplayWidget::NativeConstruct()
 
 	}
 }
+
+void UGameplayWidget::ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<class UGameplayAbility>>& Abilities)
+{
+}
