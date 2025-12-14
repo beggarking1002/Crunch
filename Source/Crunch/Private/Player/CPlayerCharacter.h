@@ -36,6 +36,9 @@ private:
 	/*************************************************************/
 private:
 	virtual void OnAimStateChanged(bool bIsAimming) override;
+	UPROPERTY()
+	class UCHeroAttributeSet* HeroAttributeSet;
+	
 	
 	/*************************************************************/
 	/*                           Input                           */
