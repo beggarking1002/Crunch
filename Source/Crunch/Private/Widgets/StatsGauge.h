@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "Blueprint/UserWidget.h"
+#include "GameplayEffectTypes.h"
 #include "StatsGauge.generated.h"
 
 /**
