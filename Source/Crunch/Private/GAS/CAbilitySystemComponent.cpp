@@ -3,10 +3,12 @@
 
 #include "GAS/CAbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "CAbilitySystemStatics.h"
 #include "GAS/CGameplayAbilityTypes.h"
 #include "CAttributeSet.h"
 #include "CHeroAttributeSet.h"
+#include "GameplayEffectExtension.h"
 
 UCAbilitySystemComponent::UCAbilitySystemComponent()
 {
@@ -82,6 +84,11 @@ void UCAbilitySystemComponent::GiveInitialAbilities()
 	{
 		GiveAbility(FGameplayAbilitySpec(AbilityPair.Value, 1, (int32)AbilityPair.Key, nullptr));
 	}
+
+	for (const TSubclassOf<UGameplayAbility>& PassiveAbility : PassiveAbilities)
+	{
+		GiveAbility(FGameplayAbilitySpec(PassiveAbility, 1, -1, nullptr));
+	}
 }
 
 void UCAbilitySystemComponent::ApplyFullStatEffect()
@@ -130,6 +137,12 @@ void UCAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& Chang
 
 			if(DeathEffect)
 				AuthApplyGameplayEffect(DeathEffect);
+
+			FGameplayEventData DeadAbilityEventData;
+			if(ChangeData.GEModData)
+				DeadAbilityEventData.ContextHandle = ChangeData.GEModData->EffectSpec.GetContext();
+
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner(), UCAbilitySystemStatics::GetDeadStatTag(), DeadAbilityEventData);
 		}
 	}
 	else
