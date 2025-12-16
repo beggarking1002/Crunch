@@ -63,6 +63,16 @@ FGameplayTag UCAbilitySystemStatics::GetHeroRoleTag()
 	return FGameplayTag::RequestGameplayTag("role.hero");
 }
 
+FGameplayTag UCAbilitySystemStatics::GetExperienceAttributeTag()
+{
+	return FGameplayTag::RequestGameplayTag("attr.experience");
+}
+
+FGameplayTag UCAbilitySystemStatics::GetGoldAttributeTag()
+{
+	return FGameplayTag::RequestGameplayTag("attr.gold");
+}
+
 
 bool UCAbilitySystemStatics::IsHero(const AActor* ActorToCheck)
 {
