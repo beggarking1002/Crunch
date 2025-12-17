@@ -22,6 +22,7 @@ public:
 	FORCEINLINE const TArray<TSubclassOf<UGameplayEffect>>& GetInitialEffects() const { return InitialEffects; }
 	FORCEINLINE const TArray<TSubclassOf<UGameplayAbility>>& GetPassiveAbilities() const { return PassiveAbilities; }
 	FORCEINLINE const UDataTable* GetBaseStatDataTable() const { return BaseStatDataTable; }
+	const FRealCurve* GetExperienceCurve() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
@@ -38,5 +39,11 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Base Stats")
 	UDataTable* BaseStatDataTable;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Level")
+	FName ExperienceRowName = "ExperienceNeededToReachLevel";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Level")
+	UCurveTable* ExperienceCurveTable;
 	
 };
