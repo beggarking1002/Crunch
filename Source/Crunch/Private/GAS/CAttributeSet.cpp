@@ -23,10 +23,34 @@ void UCAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCa
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0, GetMaxHealth()));
+		SetCachedHealthPercent(GetHealth()/GetMaxHealth());
 	}
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(), 0, GetMaxMana()));
+		SetCachedManaPercent(GetMana()/GetMaxMana());
+	}
+}
+
+void UCAttributeSet::RescaleHealth()
+{
+	if (!GetOwningActor()->HasAuthority())
+		return;
+
+	if (GetCachedHealthPercent() != 0 && GetHealth() != 0)
+	{
+		SetHealth(GetMaxHealth() * GetCachedHealthPercent());
+	}
+}
+
+void UCAttributeSet::RescaleMana()
+{
+	if (!GetOwningActor()->HasAuthority())
+		return;
+
+	if (GetCachedManaPercent() != 0 && GetMana() != 0)
+	{
+		SetMana(GetMaxMana() * GetCachedManaPercent());
 	}
 }
 
