@@ -42,6 +42,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	class UStatsGauge* StrengthGauge;
+
+	UPROPERTY(meta=(BindWidget))
+	class UShopWidget* ShopWidget;
 	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
