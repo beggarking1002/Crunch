@@ -1,0 +1,20 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "ShopItemWidget.h"
+
+#include "Blueprint/IUserObjectListEntry.h"
+#include "Inventory/PA_ShopItem.h"
+
+void UShopItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
+{
+	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
+
+	ShopItem = Cast<UPA_ShopItem>(ListItemObject);
+	if (!ShopItem)
+	{
+		return;
+	}
+
+	SetIcon(ShopItem->GetIcon());
+}
