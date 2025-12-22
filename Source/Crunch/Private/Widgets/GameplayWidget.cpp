@@ -33,11 +33,19 @@ void UGameplayWidget::ToggleShop()
 	{
 		ShopWidget->SetVisibility(ESlateVisibility::Visible);
 		PlayShopPopupAnimation(true);
+		SetOwningPawnInputEnabled(false);
+		SetShowMouseCursor(true);
+		SetFocusToGameAndUI();
+		ShopWidget->SetFocus();
+		
 	}
 	else
 	{
 		ShopWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 		PlayShopPopupAnimation(false);
+		SetOwningPawnInputEnabled(true);
+		SetShowMouseCursor(false);
+		SetFocusToGameOnly();
 	}
 }
 
@@ -51,4 +59,35 @@ void UGameplayWidget::PlayShopPopupAnimation(bool bPlayForward)
 	{
 		PlayAnimationReverse(ShopPopupAnimation);
 	}
+}
+
+void UGameplayWidget::SetOwningPawnInputEnabled(bool bPawnInputEnabled)
+{
+	if (bPawnInputEnabled)
+	{
+		GetOwningPlayerPawn()->EnableInput(GetOwningPlayer());
+	}
+	else
+	{
+		GetOwningPlayerPawn()->DisableInput(GetOwningPlayer());
+	}
+}
+
+void UGameplayWidget::SetShowMouseCursor(bool bShowMouseCursor)
+{
+	GetOwningPlayer()->SetShowMouseCursor(bShowMouseCursor);
+}
+
+void UGameplayWidget::SetFocusToGameAndUI()
+{
+	FInputModeGameAndUI GameAndUIInputMode;
+	GameAndUIInputMode.SetHideCursorDuringCapture(false);
+
+	GetOwningPlayer()->SetInputMode(GameAndUIInputMode);
+}
+
+void UGameplayWidget::SetFocusToGameOnly()
+{
+	FInputModeGameOnly GameOnlyInputMode;
+	GetOwningPlayer() ->SetInputMode(GameOnlyInputMode);
 }
