@@ -8,6 +8,10 @@
 #include "ShopItemWidget.generated.h"
 
 class UPA_ShopItem;
+class UShopItemWidget;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemPurchaseIssued, const UPA_ShopItem*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnShopItemSelected, const UShopItemWidget*);
 /**
  * 
  */
@@ -16,9 +20,14 @@ class CRUNCH_API UShopItemWidget : public UItemWidget, public IUserObjectListEnt
 {
 	GENERATED_BODY()
 public:
+	FOnItemPurchaseIssued OnItemPurchaseIssued;
+	FOnShopItemSelected OnShopItemClicked;
+	
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	FORCEINLINE const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 private:
 	UPROPERTY()
 	const UPA_ShopItem* ShopItem;
+	virtual void RightButtonClicked() override;
+	virtual void LeftButtonClicked() override;
 };

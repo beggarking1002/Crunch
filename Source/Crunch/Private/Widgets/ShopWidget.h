@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ShopWidget.generated.h"
 
+class UInventoryComponent;
 class UPA_ShopItem;
 class UTileView;
 class UShopItemWidget;
@@ -29,4 +30,7 @@ private:
 
 	UPROPERTY()
 	TMap<const UPA_ShopItem*, const UShopItemWidget*> ItemsMap;
+
+	UPROPERTY()
+	UInventoryComponent* OwnerInventoryComponent;
 };
