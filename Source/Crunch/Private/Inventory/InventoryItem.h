@@ -44,11 +44,14 @@ class CRUNCH_API UInventoryItem : public UObject
 	GENERATED_BODY()
 
 public:
+	UInventoryItem();
+	bool IsValid() const;
 	void InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem);
 	const UPA_ShopItem* GetShopItem() const {return ShopItem;}
 	FInventoryItemHandle GetHandle() const {return Handle;}
 	void ApplyGASModifications(UAbilitySystemComponent* AbilitySystemComponent);
-
+	FORCEINLINE int GetStackCount() const {return StackCount;}
+	void SetSlot(int NewSlot);
 
 private:
 	UPROPERTY()
@@ -57,4 +60,6 @@ private:
 
 	FActiveGameplayEffectHandle AppliedEquipedEffectHandle;
 	FGameplayAbilitySpecHandle GrantedAbiltiySpecHandle;
+	int StackCount;
+	int Slot;
 };
