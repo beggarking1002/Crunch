@@ -91,6 +91,18 @@ FInventoryItemHandle UInventoryItemWidget::GetItemHandle() const
 	return FInventoryItemHandle::InvalidHandle();
 }
 
+void UInventoryItemWidget::RightButtonClicked()
+{
+	if (!IsEmpty())
+		OnRightButtonClicked.Broadcast(GetItemHandle());
+}
+
+void UInventoryItemWidget::LeftButtonClicked()
+{
+	if (!IsEmpty())
+		OnLeftButtonClicked.Broadcast(GetItemHandle());
+}
+
 void UInventoryItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
                                                 UDragDropOperation*& OutOperation)
 {
