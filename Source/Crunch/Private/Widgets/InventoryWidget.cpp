@@ -35,11 +35,50 @@ void UInventoryWidget::NativeConstruct()
 
 					NewEmptyWidget->OnInventoryItemDropped.AddUObject(this, &UInventoryWidget::HandleItemDragDrop);
 					NewEmptyWidget->OnLeftButtonClicked.AddUObject(InventoryComponent, &UInventoryComponent::TryActivateItem);
+					NewEmptyWidget->OnRightButtonClicked.AddUObject(this, &UInventoryWidget::ToggleContextMenu);
 				}
 			}
-
+			SpawnContextMenu();
 		}
 	}
+}
+
+void UInventoryWidget::SpawnContextMenu()
+{
+	if (!ContextMenuWidgetClass)
+		return;
+
+	ContextMenuWidget = CreateWidget<UInventoryContextMenuWidget>(this, ContextMenuWidgetClass);
+	if (ContextMenuWidget)
+	{
+		ContextMenuWidget->GetSellButtonClickedEvent().AddDynamic(this, &UInventoryWidget::SellFocusedItem);
+		ContextMenuWidget->GetUseButtonClickedEvent().AddDynamic(this, &UInventoryWidget::UseFocusedItem);
+		ContextMenuWidget->AddToViewport(1);
+		SetContextMenuVisible(false);
+	}
+}
+
+void UInventoryWidget::SellFocusedItem()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Selling Item"));
+}
+
+void UInventoryWidget::UseFocusedItem()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Using Item"));
+}
+
+void UInventoryWidget::SetContextMenuVisible(bool bContextMenuVisible)
+{
+	if (ContextMenuWidget)
+	{
+		ContextMenuWidget->SetVisibility(bContextMenuVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	}
+}
+
+void UInventoryWidget::ToggleContextMenu(const FInventoryItemHandle& ItemHandle)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Trying to toggle context menu"));
 }
 
 void UInventoryWidget::ItemAdded(const UInventoryItem* InventoryItem)
