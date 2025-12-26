@@ -16,6 +16,16 @@ class CRUNCH_API UItemTreeWidget : public UUserWidget
 	GENERATED_BODY()
 
 private:
+	void DrawStream(
+		bool bUpperStream,
+		const ITreeNodeInterface* StartingNodeInterface,
+		UUserWidget* StartingNodeWidget,
+		class UCanvasPanelSlot* StartingNodeSlot,
+		int StartingNodeDepth,
+		float& NextLeafXPosition,
+		TArray<UCanvasPanelSlot*>& OutStreamSlots
+		);
+	
 	void ClearTree();
 	UUserWidget* CreateWidgetForNode(const ITreeNodeInterface* Node, class UCanvasPanelSlot*& OutCanvasSlot);
 	void CreateConnection(const UUserWidget* From, UUserWidget* To);
