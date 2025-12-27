@@ -26,7 +26,7 @@ TArray<const ITreeNodeInterface*> UShopItemWidget::GetInputs() const
 
 TArray<const ITreeNodeInterface*> UShopItemWidget::GetOutputs() const
 {
-	const FItemCollection* Collection = UCAssetManager::Get().GetCombinationForItem(GetShopItem());
+	const FItemCollection* Collection = UCAssetManager::Get().GetIngredientForItem(GetShopItem());
 	if (Collection)
 		return ItemsToInterfaces(Collection->GetItems());
 
