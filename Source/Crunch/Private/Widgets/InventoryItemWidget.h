@@ -80,6 +80,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
 	float CooldownUpdateInterval = 0.1f;
 
+	void BindCanCastAbilityDelegate();
+	void UnBindCanCastAbilityDelegate();
+
 	void CooldownFinished();
 	void UpdateCooldown();
 	void ClearCooldown();
