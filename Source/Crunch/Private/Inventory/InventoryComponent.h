@@ -39,7 +39,7 @@ public:
 
 	bool IsAllSlotOccupied() const;
 	UInventoryItem* GetAvailableStackForItem(const UPA_ShopItem* Item) const;
-	bool FoundIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients);
+	bool FindIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients, const TArray<const UPA_ShopItem*>& IngredientToIgnore = TArray<const UPA_ShopItem*>{});
 	UInventoryItem* TryGetItemForShopItem(const UPA_ShopItem* Item) const;
 	
 protected:
@@ -71,7 +71,7 @@ private:
 	void GrantItem(const UPA_ShopItem* NewItem);
 	void ConsumeItem(UInventoryItem* Item);
 	void RemoveItem(UInventoryItem* Item);
-	void CheckItemCombination(const UInventoryItem* NewItem);
+	bool TryItemCombination(const UPA_ShopItem* NewItem);
 	
 	/*********************************************************/
 	/*                   Client                              */
