@@ -34,6 +34,7 @@ public:
 	FORCEINLINE const UInventoryItem* GetInventoryItem() const {return InventoryItem;}
 	FInventoryItemHandle GetItemHandle() const;
 private:
+	void UpdateCanCastDisplay(bool bCanCast);
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	UTexture2D* EmptyTexture;
