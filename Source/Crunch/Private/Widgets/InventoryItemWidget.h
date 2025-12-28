@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Inventory/InventoryItem.h"
 #include "Widgets/ItemWidget.h"
 #include "InventoryItemWidget.generated.h"
 
@@ -66,4 +67,11 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Drag Drop")
 	TSubclassOf<class UInventoryItemDragDropOp> DragDropOpClass;
+
+	/******************************************/
+	/*            GAS                         */
+	/******************************************/
+
+public:
+	void StartCooldown(float CooldownDuration, float TimeRemaining);
 };
