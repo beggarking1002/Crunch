@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Inventory/InventoryItem.h"
 #include "Widgets/ItemWidget.h"
 #include "InventoryItemWidget.generated.h"
 
@@ -33,6 +34,7 @@ public:
 	FORCEINLINE const UInventoryItem* GetInventoryItem() const {return InventoryItem;}
 	FInventoryItemHandle GetItemHandle() const;
 private:
+	void UpdateCanCastDisplay(bool bCanCast);
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	UTexture2D* EmptyTexture;
@@ -66,4 +68,40 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Drag Drop")
 	TSubclassOf<class UInventoryItemDragDropOp> DragDropOpClass;
+
+	/******************************************/
+	/*            GAS                         */
+	/******************************************/
+
+public:
+	void StartCooldown(float CooldownDuration, float TimeRemaining);
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	float CooldownUpdateInterval = 0.1f;
+
+	void BindCanCastAbilityDelegate();
+	void UnBindCanCastAbilityDelegate();
+
+	void CooldownFinished();
+	void UpdateCooldown();
+	void ClearCooldown();
+
+	FTimerHandle CooldownDurationTimerHandle;
+	FTimerHandle CooldownUpdateTimerHandle;
+
+	float CooldownTimeRemaining = 0.f;
+	float CooldownTimeDuration = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	FName CooldownAmtDynamicMaterialParamName = "Percent";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	FName IconTextureDynamicMaterialParamName = "Icon";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	FName CanCastDynamicMaterialParamName = "CanCast";
+
+	virtual void SetIcon(UTexture2D* IconTexture) override;
+	FNumberFormattingOptions CooldownDisplayFormattingOptions;
 };
