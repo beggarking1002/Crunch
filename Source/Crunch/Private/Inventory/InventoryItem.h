@@ -74,6 +74,7 @@ public:
 	void RemoveGASModifications();
 	FORCEINLINE int GetStackCount() const {return StackCount;}
 	void SetSlot(int NewSlot);
+	int GetItemSlot() const { return Slot; }
 
 	float GetAbilityCooldownTimeRemaining() const;
 	float GetAbilityCooldownDuration() const;
