@@ -19,6 +19,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 
 public:	
 	// Called every frame
@@ -29,10 +30,19 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Move")
+	float InfluenceRadius = 1000.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Move")
 	float MaxMoveSpeed = 500.f;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
 	class USphereComponent* InfluenceRange;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
+	class UDecalComponent* GroundDecalComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
+	class UCameraComponent* ViewCam;
 
 	UFUNCTION()
 	void NewInfluenerInRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
@@ -49,8 +59,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Team")
 	AActor* TeamTwoGoal;
 
-	int TeamOneInfluncerCount = 0;
-	int TeamTwoInfluncerCount = 0;
+	int TeamOneInfluencerCount = 0;
+	int TeamTwoInfluencerCount = 0;
 
 	float TeamWeight = 0.f;
 

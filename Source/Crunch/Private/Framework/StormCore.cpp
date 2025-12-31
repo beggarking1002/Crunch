@@ -5,6 +5,8 @@
 
 #include "AIController.h"
 #include "GenericTeamAgentInterface.h"
+#include "Camera/CameraComponent.h"
+#include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -18,19 +20,38 @@ AStormCore::AStormCore()
 
 	InfluenceRange->OnComponentBeginOverlap.AddDynamic(this, &AStormCore::NewInfluenerInRange);
 	InfluenceRange->OnComponentEndOverlap.AddDynamic(this, &AStormCore::InfluencerLeftRange);
+
+	ViewCam = CreateDefaultSubobject<UCameraComponent>("View Cam");
+	ViewCam->SetupAttachment(GetRootComponent());
+
+	GroundDecalComponent = CreateDefaultSubobject<UDecalComponent>("Ground Decal Component");
+	GroundDecalComponent->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
 void AStormCore::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void AStormCore::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	OwnerAIC = Cast<AAIController>(NewController);
+}
+
+void AStormCore::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+	FName PropertyName = PropertyChangedEvent.GetPropertyName();
+
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AStormCore, InfluenceRadius))// 하드코딩이 아니다. if(PropertyName == "InfluenceRadius")보다 안전하다. InfluenceRadius가 없으면 컴파일 에러 발생.
+	{
+		InfluenceRange->SetSphereRadius(InfluenceRadius);
+		FVector DecalSize = GroundDecalComponent->DecalSize;
+		GroundDecalComponent->DecalSize = FVector{DecalSize.X, InfluenceRadius, InfluenceRadius};
+	}
 }
 
 // Called every frame
@@ -55,11 +76,11 @@ void AStormCore::NewInfluenerInRange(UPrimitiveComponent* OverlappedComponent, A
 	{
 		if (OtherTeamInterface->GetGenericTeamId().GetId() == 0)
 		{
-			TeamOneInfluncerCount++;
+			TeamOneInfluencerCount++;
 		}
 		else if (OtherTeamInterface->GetGenericTeamId().GetId() == 1)
 		{
-			TeamTwoInfluncerCount++;
+			TeamTwoInfluencerCount++;
 		}
 		UpdateTeamWeight();
 	}
@@ -73,18 +94,18 @@ void AStormCore::InfluencerLeftRange(UPrimitiveComponent* OverlappedComponent, A
 	{
 		if (OtherTeamInterface->GetGenericTeamId().GetId() == 0)
 		{
-			TeamOneInfluncerCount--;
-			if(TeamOneInfluncerCount< 0)
+			TeamOneInfluencerCount--;
+			if(TeamOneInfluencerCount< 0)
 			{
-				TeamOneInfluncerCount = 0;
+				TeamOneInfluencerCount = 0;
 			}
 		}
 		else if (OtherTeamInterface->GetGenericTeamId().GetId() == 1)
 		{
-			TeamTwoInfluncerCount--;
-			if(TeamTwoInfluncerCount< 0)
+			TeamTwoInfluencerCount--;
+			if(TeamTwoInfluencerCount< 0)
 			{
-				TeamTwoInfluncerCount = 0;
+				TeamTwoInfluencerCount = 0;
 			}
 		}
 		UpdateTeamWeight();
@@ -93,19 +114,19 @@ void AStormCore::InfluencerLeftRange(UPrimitiveComponent* OverlappedComponent, A
 
 void AStormCore::UpdateTeamWeight()
 {
-	if (TeamOneInfluncerCount == TeamTwoInfluncerCount)
+	if (TeamOneInfluencerCount == TeamTwoInfluencerCount)
 	{
 		TeamWeight = 0.f;
 	}
 	else
 	{
-		float TeamOffset = TeamOneInfluncerCount - TeamTwoInfluncerCount;
-		float TeamTotal = TeamOneInfluncerCount + TeamTwoInfluncerCount;
+		float TeamOffset = TeamOneInfluencerCount - TeamTwoInfluencerCount;
+		float TeamTotal = TeamOneInfluencerCount + TeamTwoInfluencerCount;
 
 		TeamWeight = TeamOffset / TeamTotal;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Team One Count: %d, Team Two Count: %d, Weight: %f"), TeamOneInfluncerCount, TeamTwoInfluncerCount, TeamWeight);
+	UE_LOG(LogTemp, Warning, TEXT("Team One Count: %d, Team Two Count: %d, Weight: %f"), TeamOneInfluencerCount, TeamTwoInfluencerCount, TeamWeight);
 	UpdateGoal();
 }
 
