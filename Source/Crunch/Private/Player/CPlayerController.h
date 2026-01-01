@@ -29,9 +29,16 @@ public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 	virtual void SetupInputComponent() override;
+	void MatchFinished(AActor* ViewTarget, int WiningTeam);
 
 private:
+	UFUNCTION(Client, Reliable)
+	void Client_MatchFinished(AActor* ViewTarget, int WiningTeam);
+	
 	void SpawnGameplayWidget();
+
+	UPROPERTY(EditDefaultsOnly, Category = "View")
+	float MatchFinishViewBlendTimeDuration = 2.f;
 	
 	UPROPERTY()
 	class ACPlayerCharacter* CPlayerCharacter;
@@ -59,4 +66,5 @@ private:
 
 	UFUNCTION()
 	void ToggleGameplayMenu();
+	void ShowWinLoseState();
 };
