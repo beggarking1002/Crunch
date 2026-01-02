@@ -4,6 +4,7 @@
 #include "GA_Shoot.h"
 
 #include "CAbilitySystemStatics.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
 UGA_Shoot::UGA_Shoot()
@@ -53,11 +54,24 @@ FGameplayTag UGA_Shoot::GetShootTag()
 void UGA_Shoot::StartShooting(FGameplayEventData Payload)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Start Shooting"));
+	if (HasAuthority(&CurrentActivationInfo))
+	{
+		UAbilityTask_PlayMontageAndWait* PlayShootMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, ShootMontage);
+		PlayShootMontage->ReadyForActivation();
+	}
+	else
+	{
+		PlayMontageLocally(ShootMontage);
+	}
 }
 
 void UGA_Shoot::StopShooting(FGameplayEventData Payload)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Stop Shooting"));
+	if (ShootMontage)
+	{
+		StopMontageAfterCurrentSection(ShootMontage);
+	}
 }
 
 void UGA_Shoot::ShootProjectile(FGameplayEventData Payload)
