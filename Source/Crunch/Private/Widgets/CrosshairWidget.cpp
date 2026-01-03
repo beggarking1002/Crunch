@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/Image.h"
 #include "GAS/CAbilitySystemStatics.h"
 
 

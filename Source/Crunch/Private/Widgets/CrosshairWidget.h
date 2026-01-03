@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Blueprint/UserWidget.h"
 #include "CrosshairWidget.generated.h"
 
@@ -23,7 +24,7 @@ private:
 	void CrosshairTagUpdated(const FGameplayTag Tag, int32 NewCount);
 	
 	UPROPERTY()
-	class UCanvasPanelSlot* CrosshairCanvasSlot;
+	class UCanvasPanelSlot* CrosshairCanvasPanelSlot;
 	
 	UPROPERTY()
 	class APlayerController* CachedPlayerController;
