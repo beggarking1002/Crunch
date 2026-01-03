@@ -68,6 +68,12 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	}
 }
 
+void ACPlayerCharacter::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
+{
+	OutLocation = ViewCam->GetComponentLocation();
+	OutRotation = ViewCam->GetComponentRotation();
+}
+
 void ACPlayerCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
 {
 	FVector2D InputVal = InputActionValue.Get<FVector2D>();
@@ -167,8 +173,9 @@ void ACPlayerCharacter::OnRespawn()
 
 void ACPlayerCharacter::OnAimStateChanged(bool bIsAimming)
 {
-	if(IsLocallyControlledByPlayer())
-		LerpCameraToLocalOffsetLocation(bIsAimming ? CameraAimLocalOffset : FVector{0.f});}
+	//if(IsLocallyControlledByPlayer()) 서버에서도 조준한거 기준으로 debugline을 그리기 위해서
+	LerpCameraToLocalOffsetLocation(bIsAimming ? CameraAimLocalOffset : FVector{0.f});
+}
 
 void ACPlayerCharacter::LerpCameraToLocalOffsetLocation(const FVector& Goal)
 {
