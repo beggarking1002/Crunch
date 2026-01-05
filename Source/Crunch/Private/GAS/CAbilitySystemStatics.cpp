@@ -83,8 +83,18 @@ FGameplayTag UCAbilitySystemStatics::GetCrosshairTag()
 	return FGameplayTag::RequestGameplayTag("stats.crosshair");
 }
 
+bool UCAbilitySystemStatics::IsActorDead(const AActor* ActorToCheck)
+{
+	return ActorHasTag(ActorToCheck, GetDeadStatTag());
+}
+
 
 bool UCAbilitySystemStatics::IsHero(const AActor* ActorToCheck)
+{
+	return ActorHasTag(ActorToCheck, GetHeroRoleTag());
+}
+
+bool UCAbilitySystemStatics::ActorHasTag(const AActor* ActorToCheck, const FGameplayTag& Tag)
 {
 	const IAbilitySystemInterface* ActorISA = Cast<IAbilitySystemInterface>(ActorToCheck);
 	if (ActorISA)
@@ -92,7 +102,7 @@ bool UCAbilitySystemStatics::IsHero(const AActor* ActorToCheck)
 		UAbilitySystemComponent* ActorASC = ActorISA->GetAbilitySystemComponent();
 		if (ActorASC)
 		{
-			return ActorASC->HasMatchingGameplayTag(GetHeroRoleTag());
+			return ActorASC->HasMatchingGameplayTag(Tag);
 		}
 	}
 	return false;
