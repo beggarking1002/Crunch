@@ -83,6 +83,11 @@ FGameplayTag UCAbilitySystemStatics::GetCrosshairTag()
 	return FGameplayTag::RequestGameplayTag("stats.crosshair");
 }
 
+FGameplayTag UCAbilitySystemStatics::GetTargetUpdatedTag()
+{
+	return FGameplayTag::RequestGameplayTag("target.updated");
+}
+
 bool UCAbilitySystemStatics::IsActorDead(const AActor* ActorToCheck)
 {
 	return ActorHasTag(ActorToCheck, GetDeadStatTag());

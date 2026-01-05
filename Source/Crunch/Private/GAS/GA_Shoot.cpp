@@ -59,7 +59,7 @@ void UGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGamep
 		AimTargetAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetDeadStatTag()).RemoveAll(this);
 		AimTargetAbilitySystemComponent = nullptr;
 	}
-
+	SendLocalGameplayEvent(UCAbilitySystemStatics::GetTargetUpdatedTag(), FGameplayEventData());
 	StopShooting(FGameplayEventData());
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -154,6 +154,9 @@ void UGA_Shoot::FindAimTarget()
 			AimTargetAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &UGA_Shoot::TargetDeadTagUpdated);
 		}
 	}
+	FGameplayEventData EventData;
+	EventData.Target = AimTarget;
+	SendLocalGameplayEvent(UCAbilitySystemStatics::GetTargetUpdatedTag(), EventData);
 }
 
 void UGA_Shoot::StartAimTargetCheckTimer()
