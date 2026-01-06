@@ -78,6 +78,7 @@ void UGA_Lazer::ShootLazer(FGameplayEventData Payload)
 	ATargetActor_Line* LineTargetActor = Cast<ATargetActor_Line>(TargetActor);
 	if (LineTargetActor)
 	{
+		LineTargetActor->ConfigureTargetSetting(TargetRange, DetectionCylinderRadius, TargetingInterval, GetOwnerTeamId(), ShouldDrawDebug());
 		LineTargetActor->AttachToComponent(GetOwningComponentFromActorInfo(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TargetActorAttachSocketName);
 	}
 }
