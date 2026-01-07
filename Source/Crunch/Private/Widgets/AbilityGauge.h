@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Blueprint/UserWidget.h"
+#include "GameplayAbilitySpecHandle.h"
 #include "GameplayEffectTypes.h"
 #include "AbilityGauge.generated.h"
 
@@ -96,7 +97,7 @@ private:
 
 
 	const UAbilitySystemComponent* OwnerAbilitySystemComponent;
-	const FGameplayAbilitySpec* CachedAbilitySpec;
+	FGameplayAbilitySpecHandle CachedAbilitySpecHandle;
 
 	const FGameplayAbilitySpec* GetAbilitySpec();
 
