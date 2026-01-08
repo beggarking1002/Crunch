@@ -23,6 +23,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void StartTargeting(class UGameplayAbility* Ability) override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void ConfirmTargetingAndContinue() override;
+	virtual void CancelTargeting() override;
 private:
 	UPROPERTY(Replicated)
 	FGenericTeamId TeamId;
