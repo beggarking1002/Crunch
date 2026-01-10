@@ -15,7 +15,7 @@ void UCharacterEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	if (CharacterDefinition)
 	{
 		CharacterIcon->GetDynamicMaterial()->SetTextureParameterValue(IconTextureMatParamName, CharacterDefinition->LoadIcon());
-		CharacterNameText->SetText(FText::FromString(CharacterDefinition->GEtCharacterDisplayName()));
+		CharacterNameText->SetText(FText::FromString(CharacterDefinition->GetCharacterDisplayName()));
 	}
 }
 
