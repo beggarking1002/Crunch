@@ -3,6 +3,7 @@
 
 #include "LobbyWidget.h"
 
+#include "CharacterEntryWidget.h"
 #include "TeamSelectionWidget.h"
 #include "Character/PA_CharacterDefinition.h"
 #include "Components/Button.h"
@@ -13,6 +14,7 @@
 #include "Framework/CAssetManager.h"
 #include "Framework/CGameState.h"
 #include "Network/CNetStatics.h"
+#include "Player/CPlayerState.h"
 #include "Player/LobbyPlayerController.h"
 
 
@@ -30,6 +32,10 @@ void ULobbyWidget::NativeConstruct()
 	StartHeroSelectionButton->OnClicked.AddDynamic(this, &ULobbyWidget::StartHeroSelectionButtonClicked);
 
 	UCAssetManager::Get().LoadCharacterDefinitions(FStreamableDelegate::CreateUObject(this, &ULobbyWidget::CharacterDefinitionLoaded));
+	if (CharacterSelectionTileView)
+	{
+		CharacterSelectionTileView->OnItemSelectionChanged().AddUObject(this, &ULobbyWidget::CharacterSelected);
+	}
 }
 
 void ULobbyWidget::ClearAndPopulateTeamSelectionSlots()
@@ -90,6 +96,13 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 	{
 		SelectionSlot->UpdateSlotInfo("Empty");
 	}
+	for (UUserWidget* CharacterEntryAsWidget : CharacterSelectionTileView->GetDisplayedEntryWidgets())
+	{
+		if (UCharacterEntryWidget* CharacterEntryWidget = Cast<UCharacterEntryWidget>(CharacterEntryAsWidget))
+		{
+			CharacterEntryWidget->SetSelected(false);
+		}
+	}
 
 	for (const FPlayerSelection& PlayerSelection : PlayerSelections)
 	{
@@ -97,8 +110,13 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 			continue;
 
 		TeamSelectionSlots[PlayerSelection.GetPlayerSlot()]->UpdateSlotInfo(PlayerSelection.GetPlayerNickName());
+		UCharacterEntryWidget* SelectedEntry = CharacterSelectionTileView->GetEntryWidgetFromItem<UCharacterEntryWidget>(PlayerSelection.GetCharacterDefinition());
+		if (SelectedEntry)
+		{
+			SelectedEntry->SetSelected(true);
+		}
 	}
-
+	
 	if (CGameState)
 	{
 		StartHeroSelectionButton->SetIsEnabled(CGameState->CanStartHeroSelection());
@@ -120,9 +138,28 @@ void ULobbyWidget::SwitchToHeroSelection()
 
 void ULobbyWidget::CharacterDefinitionLoaded()
 {
-	TArray<UPA_CharacterDefinition*> LoadedCharacterDefinations;
-	if (UCAssetManager::Get().GetLoadedCharacterDefinitions(LoadedCharacterDefinations))
+	TArray<UPA_CharacterDefinition*> LoadedCharacterDefinitions;
+	if (UCAssetManager::Get().GetLoadedCharacterDefinitions(LoadedCharacterDefinitions))
 	{
-		CharacterSelectionTileView->SetListItems(LoadedCharacterDefinations);
+		CharacterSelectionTileView->SetListItems(LoadedCharacterDefinitions);
 	}
 }
+
+void ULobbyWidget::CharacterSelected(UObject* SelectedUObject)
+{
+	if (!CPlayerState)
+	{
+		CPlayerState = GetOwningPlayerState<ACPlayerState>();
+	}
+
+	if (!CPlayerState)
+		return;
+
+	if (const UPA_CharacterDefinition* CharacterDefinition = Cast<UPA_CharacterDefinition>(SelectedUObject))
+	{
+		CPlayerState->Server_SetSelectedCharacterDefinition(CharacterDefinition);
+	}
+
+}
+
+

@@ -48,7 +48,7 @@ void ACPlayerState::Server_SetSelectedCharacterDefinition_Implementation(const U
 	}
 
 	PlayerSelection.SetCharacterDefinition(NewDefinition);
-
+	CGameState->SetCharacterSelected(this, NewDefinition);
 }
 
 bool ACPlayerState::Server_SetSelectedCharacterDefinition_Validate(const UPA_CharacterDefinition* NewDefinition)

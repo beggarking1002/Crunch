@@ -18,7 +18,7 @@ class UCharacterEntryWidget : public UUserWidget, public IUserObjectListEntry
 public:
 	
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
-	FORCEINLINE const UPA_CharacterDefinition* GetCharacterDefination() const { return CharacterDefinition; }
+	FORCEINLINE const UPA_CharacterDefinition* GetCharacterDefinition() const { return CharacterDefinition; }
 	void SetSelected(bool bIsSelected);
 private:	
 	UPROPERTY(meta=(BindWidget))
