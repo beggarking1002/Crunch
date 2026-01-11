@@ -12,7 +12,6 @@ ACharacterDisplay::ACharacterDisplay()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bCanEverTick = true;
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>("Root Comp"));
 
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh Component");
@@ -29,6 +28,7 @@ void ACharacterDisplay::ConfigureWithCharacterDefinition(const UPA_CharacterDefi
 
 	MeshComponent->SetSkeletalMesh(CharacterDefinition->LoadDisplayMesh());
 	MeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	MeshComponent->SetAnimClass(CharacterDefinition->LoadDisplayAnimationBP());
 
 }
 
