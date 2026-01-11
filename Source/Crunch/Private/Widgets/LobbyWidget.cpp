@@ -103,7 +103,7 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 			CharacterEntryWidget->SetSelected(false);
 		}
 	}
-
+	
 	for (const FPlayerSelection& PlayerSelection : PlayerSelections)
 	{
 		if (!PlayerSelection.IsValid())
@@ -159,7 +159,4 @@ void ULobbyWidget::CharacterSelected(UObject* SelectedUObject)
 	{
 		CPlayerState->Server_SetSelectedCharacterDefinition(CharacterDefinition);
 	}
-
 }
-
-
