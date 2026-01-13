@@ -55,3 +55,17 @@ USkeletalMesh* UPA_CharacterDefinition::LoadDisplayMesh() const
 
 	return Character->GetMesh()->GetSkeletalMeshAsset();
 }
+
+const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>* UPA_CharacterDefinition::GetAbilities() const
+{
+	TSubclassOf<ACCharacter> LoadedCharaterClass = LoadCharacterClass();
+	if (!LoadedCharaterClass)
+		return nullptr;
+
+	ACCharacter* Character = Cast<ACCharacter>(LoadedCharaterClass.GetDefaultObject());
+	if (!Character)
+		return nullptr;
+
+	return &(Character->GetAbilities());
+}
+
