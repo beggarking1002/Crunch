@@ -3,9 +3,12 @@
 
 #include "CPlayerState.h"
 
+#include "Character/PA_CharacterDefinition.h"
+#include "Character/CCharacter.h"
 #include "Framework/CGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Network/CNetStatics.h"
 
 ACPlayerState::ACPlayerState()
 {
@@ -29,6 +32,31 @@ void ACPlayerState::BeginPlay()
 		CGameState->OnPlayerSelectionUpdated.AddUObject(this, &ACPlayerState::PlayerSelectionUpdated);
 	}
 	
+}
+
+void ACPlayerState::CopyProperties(APlayerState* PlayerState)
+{
+	Super::CopyProperties(PlayerState);
+	ACPlayerState* NewPlayerState = Cast < ACPlayerState>(PlayerState);
+	if (NewPlayerState)
+	{
+		NewPlayerState->PlayerSelection = PlayerSelection;
+	}
+}
+
+TSubclassOf<APawn> ACPlayerState::GetSelectedPawnClass() const
+{
+	if (PlayerSelection.GetCharacterDefinition())
+	{
+		return PlayerSelection.GetCharacterDefinition()->LoadCharacterClass();
+	}
+
+	return nullptr;
+}
+
+FGenericTeamId ACPlayerState::GetTeamIdBasedOnSlot() const
+{
+	return PlayerSelection.GetPlayerSlot() < UCNetStatics::GetPlayerCountPerTeam() ? FGenericTeamId{ 0 } : FGenericTeamId{ 1 };
 }
 
 void ACPlayerState::Server_SetSelectedCharacterDefinition_Implementation(const UPA_CharacterDefinition* NewDefinition)

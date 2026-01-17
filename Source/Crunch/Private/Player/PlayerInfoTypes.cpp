@@ -4,12 +4,12 @@
 
 
 FPlayerSelection::FPlayerSelection()
-	:Slot{ GetInvalidSlot() }, PlayerUniqueId{ FUniqueNetIdRepl::Invalid() }, PlayerNickName{}, CharacterDefinition(nullptr)
+	:Slot{ GetInvalidSlot() }, PlayerUniqueId{ FUniqueNetIdRepl::Invalid() }, PlayerNickName{}, CharacterDefinition{nullptr}
 {
 }
 
 FPlayerSelection::FPlayerSelection(uint8 InSlot, const APlayerState* InPlayerState)
-	:Slot{InSlot}, PlayerUniqueId(FUniqueNetIdRepl::Invalid()), PlayerNickName(), CharacterDefinition(nullptr)
+	:Slot{ InSlot }, CharacterDefinition{nullptr}
 {
 	if (InPlayerState)
 	{
