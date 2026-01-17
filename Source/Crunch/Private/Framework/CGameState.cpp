@@ -28,6 +28,25 @@ void ACGameState::RequestPlayerSelectionChange(const APlayerState* RequestingPla
 	OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
 }
 
+void ACGameState::SetCharacterSelected(const APlayerState* SelectingPlayer,
+	const UPA_CharacterDefinition* SelectedDefinition)
+{
+	if (IsDefinitionSelected(SelectedDefinition))
+		return;
+	FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& PlayerSelection)
+		{
+			return PlayerSelection.IsForPlayer(SelectingPlayer);
+		}
+	);
+	if (FoundPlayerSelection)
+	{
+		FoundPlayerSelection->SetCharacterDefinition(SelectedDefinition);
+		OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
+	}
+	
+}
+
 bool ACGameState::IsSlotOccupied(uint8 SlotId) const
 {
 	for (const FPlayerSelection& PlayerSelection : PlayerSelectionArray)
@@ -41,6 +60,35 @@ bool ACGameState::IsSlotOccupied(uint8 SlotId) const
 	return false;
 }
 
+bool ACGameState::IsDefinitionSelected(const UPA_CharacterDefinition* Definition) const
+{
+	const FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& PlayerSelection)
+		{
+			return PlayerSelection.GetCharacterDefinition() == Definition;
+		}
+		);
+	return FoundPlayerSelection != nullptr; 
+}
+
+void ACGameState::SetCharacterDeselected(const UPA_CharacterDefinition* DefinitionToDeselect)
+{
+	if (!DefinitionToDeselect)
+		return;
+	FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& PlayerSelection)
+		{
+			return PlayerSelection.GetCharacterDefinition() == DefinitionToDeselect;
+		}
+		);
+
+	if (FoundPlayerSelection)
+	{
+		FoundPlayerSelection->SetCharacterDefinition(nullptr);
+		OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
+	}
+}
+
 void ACGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -50,6 +98,24 @@ void ACGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 const TArray<FPlayerSelection>& ACGameState::GetPlayerSelection() const
 {
 	return PlayerSelectionArray;
+}
+
+bool ACGameState::CanStartHeroSelection() const
+{
+	return PlayerSelectionArray.Num() == PlayerArray.Num();
+}
+
+bool ACGameState::CanStartMatch() const
+{
+	for (const FPlayerSelection& PlayerSelection : PlayerSelectionArray)
+	{
+		if (PlayerSelection.GetCharacterDefinition() == nullptr)
+		{
+			return false;
+		}
+	}
+	return true;
+
 }
 
 void ACGameState::OnRep_PlayerSelectionArray()

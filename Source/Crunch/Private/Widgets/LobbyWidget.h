@@ -38,9 +38,27 @@ private:
 	void ClearAndPopulateTeamSelectionSlots();
 	void SlotSelected(uint8 NewSlotID);
 
+	UPROPERTY(meta=(BindWidget))
+	class UWidget* HeroSelectionRoot;
+
+	UPROPERTY(meta=(BindWidget))	
+	class UTileView* CharacterSelectionTileView;
+
+	UPROPERTY(meta=(BindWidget))
+	class UAbilityListView* AbilityListView;
+
+	UPROPERTY(meta=(BindWidget))	
+	class UPlayerTeamLayoutWidget* PlayerTeamLayoutWidget;
+
+	UPROPERTY(meta=(BindWidget))
+	class UButton* StartMatchButton;
+	
 	UPROPERTY()
 	class ALobbyPlayerController* LobbyPlayerController;
 
+	UPROPERTY()
+	class ACPlayerState* CPlayerState;
+	
 	void ConfigureGameState();
 	FTimerHandle ConfigureGameStateTimerHandle;
 
@@ -48,4 +66,24 @@ private:
 	class ACGameState* CGameState;
 
 	void UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& PlayerSelections);
+
+	UFUNCTION()
+	void StartHeroSelectionButtonClicked();
+
+	void SwitchToHeroSelection();
+	void CharacterDefinitionLoaded();
+	
+	void CharacterSelected(UObject* SelectedUObject);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character Display")
+	TSubclassOf<class ACharacterDisplay> CharacterDisplayClass;
+
+	UPROPERTY()
+	class ACharacterDisplay* CharacterDisplay;
+
+	void SpawnCharacterDisplay();
+	void UpdateCharacterDisplay(const FPlayerSelection& PlayerSelection);
+
+	UFUNCTION()
+	void StartMatchButtonClicked();
 };
