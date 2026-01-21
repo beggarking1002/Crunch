@@ -15,6 +15,7 @@ void UCGameInstance::StartMatch()
 void UCGameInstance::Init()
 {
 	Super::Init();
+	UE_LOG(LogTemp, Warning, TEXT("### GI Init Entered ###"));
 	if (GetWorld()->IsEditorWorld())
 		return;
 
@@ -30,7 +31,7 @@ void UCGameInstance::CreateSession()
 	FString SessionSearchId = UCNetStatics::GetSessionSearchIdStr();
 	SessionServerPort = UCNetStatics::GetSessionPort();
 
-	UE_LOG(LogTemp, Warning, TEXT("#### Create Session With Name: %s, ID: %s, Port: %d"), *(ServerSessionName), *(SessionSearchId), SessionServerPort)
+	UE_LOG(LogTemp, Warning, TEXT("#### Create Session With Name: %s, ID: %s, Port: %d"), *(ServerSessionName), *(SessionSearchId), SessionServerPort);
 }
 
 void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
