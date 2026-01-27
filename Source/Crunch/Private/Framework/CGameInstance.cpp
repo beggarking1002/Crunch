@@ -3,6 +3,8 @@
 
 #include "CGameInstance.h"
 #include <Network/CNetStatics.h>
+#include "Interfaces/OnlineSessionInterface.h"
+#include "Interfaces/OnlineIdentityInterface.h"
 
 void UCGameInstance::StartMatch()
 {
@@ -27,11 +29,20 @@ void UCGameInstance::Init()
 
 void UCGameInstance::CreateSession()
 {
-	ServerSessionName = UCNetStatics::GetSessionNameStr();
-	FString SessionSearchId = UCNetStatics::GetSessionSearchIdStr();
-	SessionServerPort = UCNetStatics::GetSessionPort();
+	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
+	if (SessionPtr)
+	{
+		ServerSessionName = UCNetStatics::GetSessionNameStr();
+		FString SessionSearchId = UCNetStatics::GetSessionSearchIdStr();
+		SessionServerPort = UCNetStatics::GetSessionPort();
+		UE_LOG(LogTemp, Warning, TEXT("#### Create Session With Name: %s, ID: %s, Port: %d"), *(ServerSessionName), *(SessionSearchId), SessionServerPort)
 
-	UE_LOG(LogTemp, Warning, TEXT("#### Create Session With Name: %s, ID: %s, Port: %d"), *(ServerSessionName), *(SessionSearchId), SessionServerPort);
+		FOnlineSessionSettings OnlineSessionSetting = UCNetStatics::GenerateOnlineSessionSettings(FName(ServerSessionName), SessionSearchId, SessionServerPort);
+		if (!SessionPtr->CreateSession(0, FName(ServerSessionName), OnlineSessionSetting))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Sesison Creating Failed Right away!!!!"))
+		}
+	}
 }
 
 void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
