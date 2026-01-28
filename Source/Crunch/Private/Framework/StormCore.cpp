@@ -64,7 +64,7 @@ void AStormCore::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	OwnerAIC = Cast<AAIController>(NewController);
 }
-
+#if WITH_EDITOR
 void AStormCore::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -77,6 +77,7 @@ void AStormCore::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyCh
 		GroundDecalComponent->DecalSize = FVector{DecalSize.X, InfluenceRadius, InfluenceRadius};
 	}
 }
+#endif
 
 // Called every frame
 void AStormCore::Tick(float DeltaTime)

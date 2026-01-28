@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
 #include "CNetStatics.generated.h"
 
 /**
@@ -13,6 +15,25 @@ UCLASS()
 class CRUNCH_API UCNetStatics : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-public:	
+public:
+	static FOnlineSessionSettings GenerateOnlineSessionSettings(const FName& SessionName, const FString& SessionSearchId, int Port);
+
+	static IOnlineSessionPtr GetSessionPtr();
+	static IOnlineIdentityPtr GetIdentityPtr();
+
 	static uint8 GetPlayerCountPerTeam();
+
+	static bool IsSessionServer(const UObject* WorldContextObject);
+
+	static FString GetSessionNameStr();
+	static FName GetSessionNameKey();
+
+	static FString GetSessionSearchIdStr();
+	static FName GetSessionSearchIdKey();
+
+	static int GetSessionPort();
+	static FName GetPortKey();
+
+	static FString GetCommandlineArgAsString(const FName& ParamName);
+	static int GetCommandlineArgAsInt(const FName& ParamName);
 };
