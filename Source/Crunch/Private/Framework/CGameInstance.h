@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "CGameInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompleted, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*ErrorMsg*/);
 /**
  * 
  */
@@ -16,6 +17,21 @@ class CRUNCH_API UCGameInstance : public UGameInstance
 public:
 	void StartMatch();
 	virtual void Init() override;
+
+/*************************************/
+/*             Login                 */
+/*************************************/
+public:
+	bool IsLoggedIn() const;
+	bool IsLoggingIn() const;
+	void ClientAccountPortalLogin();
+	FOnLoginCompleted OnLoginCompleted;
+private:
+	void ClientLogin(const FString& Type, const FString& Id, const FString& Token);
+	void LoginCompleted(int NumOfLocalPlayer, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error);
+
+	FDelegateHandle LoggingInDelegateHandle;
+
 
 /*************************************/
 /*         Session Server            */
