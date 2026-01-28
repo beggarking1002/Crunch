@@ -35,14 +35,65 @@ void UCGameInstance::CreateSession()
 		ServerSessionName = UCNetStatics::GetSessionNameStr();
 		FString SessionSearchId = UCNetStatics::GetSessionSearchIdStr();
 		SessionServerPort = UCNetStatics::GetSessionPort();
-		UE_LOG(LogTemp, Warning, TEXT("#### Create Session With Name: %s, ID: %s, Port: %d"), *(ServerSessionName), *(SessionSearchId), SessionServerPort)
+		UE_LOG(LogTemp, Warning, TEXT("#### Create Session With Name: %s, ID: %s, Port: %d"), *(ServerSessionName), *(SessionSearchId), SessionServerPort);
 
 		FOnlineSessionSettings OnlineSessionSetting = UCNetStatics::GenerateOnlineSessionSettings(FName(ServerSessionName), SessionSearchId, SessionServerPort);
+		SessionPtr->OnCreateSessionCompleteDelegates.RemoveAll(this);
+		SessionPtr->OnCreateSessionCompleteDelegates.AddUObject(this, &UCGameInstance::OnSessionCreated);
 		if (!SessionPtr->CreateSession(0, FName(ServerSessionName), OnlineSessionSetting))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Sesison Creating Failed Right away!!!!"))
+			UE_LOG(LogTemp, Warning, TEXT("Sesison Creating Failed Right away!!!!"));
+			SessionPtr->OnCreateSessionCompleteDelegates.RemoveAll(this);
+			TerminateSessionServer();
 		}
 	}
+}
+
+void UCGameInstance::OnSessionCreated(FName SessionName, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("------------- Session Created!"));
+		GetWorld()->GetTimerManager().SetTimer(WaitPlayerJoinTimeoutHandle, this, &UCGameInstance::WaitPlayerJoinTimeoutReached, WaitPlayerJoinTimeOutDuration);
+		LoadLevelAndListen(LobbyLevel);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("------------ Session Creation Failed"));
+		TerminateSessionServer();
+	}
+	if (IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr())
+	{
+		SessionPtr->OnCreateSessionCompleteDelegates.RemoveAll(this);
+	}
+}
+
+void UCGameInstance::EndSessionCompleted(FName SessionName, bool bWasSuccessful)
+{
+	FGenericPlatformMisc::RequestExit(false);
+}
+
+void UCGameInstance::TerminateSessionServer()
+{
+	if (IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr())
+	{
+		SessionPtr->OnEndSessionCompleteDelegates.RemoveAll(this);
+		SessionPtr->OnEndSessionCompleteDelegates.AddUObject(this, &UCGameInstance::EndSessionCompleted);
+		if (!SessionPtr->EndSession(FName{ ServerSessionName }))
+		{
+			FGenericPlatformMisc::RequestExit(false);
+		}
+	}
+	else
+	{
+		FGenericPlatformMisc::RequestExit(false);
+	}
+}
+
+void UCGameInstance::WaitPlayerJoinTimeoutReached()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Session Sever shut down after %f seconds without player joining"), WaitPlayerJoinTimeOutDuration)
+	TerminateSessionServer();
 }
 
 void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
@@ -51,6 +102,8 @@ void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
 
 	if (LevelURL != "")
 	{
-		GetWorld()->ServerTravel(LevelURL.ToString() + "?listen");
+		FString TravelStr = FString::Printf(TEXT("%s?listen?port=%d"), *LevelURL.ToString(), SessionServerPort);
+		UE_LOG(LogTemp, Warning, TEXT("Server Traveling to: %s"), *(TravelStr))
+		GetWorld()->ServerTravel(TravelStr);
 	}
 }
