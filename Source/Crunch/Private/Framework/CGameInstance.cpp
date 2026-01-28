@@ -27,6 +27,26 @@ void UCGameInstance::Init()
 	}
 }
 
+void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
+{
+	if (WaitPlayerJoinTimeoutHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(WaitPlayerJoinTimeoutHandle);
+	}
+
+	PlayerRecord.Add(UniqueId);
+}
+
+void UCGameInstance::PlayerLeft(const FUniqueNetIdRepl& UniqueId)
+{
+	PlayerRecord.Remove(UniqueId);
+	if (PlayerRecord.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("All player left the session, terminating"))
+		TerminateSessionServer();
+	}
+}
+
 void UCGameInstance::CreateSession()
 {
 	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
@@ -46,6 +66,11 @@ void UCGameInstance::CreateSession()
 			SessionPtr->OnCreateSessionCompleteDelegates.RemoveAll(this);
 			TerminateSessionServer();
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't find sesison ptr, terminating"))
+		TerminateSessionServer();
 	}
 }
 

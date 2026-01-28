@@ -20,6 +20,9 @@ public:
 /*************************************/
 /*         Session Server            */
 /*************************************/
+public:
+	void PlayerJoined(const FUniqueNetIdRepl& UniqueId);
+	void PlayerLeft(const FUniqueNetIdRepl& UniqueId);
 private:
 	void CreateSession();
 	void OnSessionCreated(FName SessionName, bool bWasSuccessful);
@@ -35,7 +38,8 @@ private:
 	float WaitPlayerJoinTimeOutDuration = 60.f;
 
 	void WaitPlayerJoinTimeoutReached();
-
+	
+	TSet<FUniqueNetIdRepl> PlayerRecord;
 private:	
 	UPROPERTY(EditDefaultsOnly, Category = "Map")
 	TSoftObjectPtr<UWorld> MainMenuLevel;
