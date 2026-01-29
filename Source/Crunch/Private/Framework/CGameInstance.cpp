@@ -100,6 +100,16 @@ void UCGameInstance::LoginCompleted(int NumOfLocalPlayer, bool bWasSuccessful, c
 	}
 }
 
+void UCGameInstance::RequestCreateAndJoinSession(const FName& NewSessionName)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Requesting Creat and Join Session: %s"), *(NewSessionName.ToString()))
+}
+
+void UCGameInstance::CancelSessionCreation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Canceling Session Creation"))
+}
+
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
 {
 	if (WaitPlayerJoinTimeoutHandle.IsValid())
