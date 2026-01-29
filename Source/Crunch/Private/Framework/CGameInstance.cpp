@@ -106,15 +106,49 @@ void UCGameInstance::RequestCreateAndJoinSession(const FName& NewSessionName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Requesting Create and Join Session: %s"), *(NewSessionName.ToString()))
 	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
-	FGuid SessioinSearchId = FGuid::NewGuid();
+	FGuid SessionSearchId = FGuid::NewGuid();
 
 	FString CoordinatorURL = UCNetStatics::GetCoordinatorURL();
-	UE_LOG(LogTemp, Warning, TEXT("Sending Request Session Creation to URL: %s"), *CoordinatorURL)
+
+	FString URL = FString::Printf(TEXT("%s/Sessions"), *CoordinatorURL);
+	UE_LOG(LogTemp, Warning, TEXT("Sending Request Session Creation to URL: %s"), *URL)
+
+	Request->SetURL(URL);
+	Request->SetVerb("POST");
+
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
+	JsonObject->SetStringField(UCNetStatics::GetSessionNameKey().ToString(), NewSessionName.ToString());
+	JsonObject->SetStringField(UCNetStatics::GetSessionSearchIdKey().ToString(), SessionSearchId.ToString());
+
+	FString RequestBoby;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBoby);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	Request->SetContentAsString(RequestBoby);
+	Request->OnProcessRequestComplete().BindUObject(this, &UCGameInstance::SessionCreationRequestCompleted, SessionSearchId);
+	
+	if (!Request->ProcessRequest())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Session Creation Request Failed Right Away!"))
+	}
 }
 
 void UCGameInstance::CancelSessionCreation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Canceling Session Creation"))
+}
+
+void UCGameInstance::SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully, FGuid SessionSearchId)
+{
+	if (!bConnectedSuccessfully)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Connection responded with connection was not successful!"))
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Connection to Coordinator Successfully!"))
 }
 
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
