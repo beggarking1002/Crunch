@@ -85,6 +85,30 @@ FName UCNetStatics::GetPortKey()
 	return FName("PORT");
 }
 
+FName UCNetStatics::GetCoordinatorURLKey()
+{
+	return FName("COORDINATOR_URL");
+}
+
+FString UCNetStatics::GetCoordinatorURL()
+{
+	FString CoordinatorURL = GetCommandlineArgAsString(GetCoordinatorURLKey());
+	if (CoordinatorURL != "")
+	{
+		return CoordinatorURL;
+	}
+
+	return GetDefaultCoordinatorURL();
+}
+
+FString UCNetStatics::GetDefaultCoordinatorURL()
+{
+	FString CoordinatorURL = "";
+	GConfig->GetString(TEXT("Crunch.Net"), TEXT("CoordinatorURL"), CoordinatorURL, GGameIni);
+	UE_LOG(LogTemp, Warning, TEXT("Getting Default Coordinator URL as: %s"), *CoordinatorURL)
+	return CoordinatorURL;
+}
+
 FString UCNetStatics::GetCommandlineArgAsString(const FName& ParamName)
 {
 	FString OutVal = "";

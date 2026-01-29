@@ -3,6 +3,8 @@
 
 #include "CGameInstance.h"
 #include <Network/CNetStatics.h>
+
+#include "HttpModule.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 
@@ -25,6 +27,128 @@ void UCGameInstance::Init()
 	{
 		CreateSession();
 	}
+}
+
+bool UCGameInstance::IsLoggedIn() const
+{
+	if (IOnlineIdentityPtr IdentityPtr = UCNetStatics::GetIdentityPtr())
+	{
+		return IdentityPtr->GetLoginStatus(0) == ELoginStatus::LoggedIn;
+	}
+
+	return false;
+}
+
+bool UCGameInstance::IsLoggingIn() const
+{
+	return LoggingInDelegateHandle.IsValid();
+}
+
+void UCGameInstance::ClientAccountPortalLogin()
+{
+	ClientLogin("AccountPortal", "", "");
+}
+
+void UCGameInstance::ClientLogin(const FString& Type, const FString& Id, const FString& Token)
+{
+	if (IOnlineIdentityPtr IdentityPtr = UCNetStatics::GetIdentityPtr())
+	{
+		if (LoggingInDelegateHandle.IsValid())
+		{
+			IdentityPtr->OnLoginCompleteDelegates->Remove(LoggingInDelegateHandle);
+			LoggingInDelegateHandle.Reset();
+		}
+
+		LoggingInDelegateHandle = IdentityPtr->OnLoginCompleteDelegates->AddUObject(this, &UCGameInstance::LoginCompleted);
+		if (!IdentityPtr->Login(0, FOnlineAccountCredentials(Type, Id, Token)))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Login Failed Right Away!"))
+			if (LoggingInDelegateHandle.IsValid())
+			{
+				IdentityPtr->OnLoginCompleteDelegates->Remove(LoggingInDelegateHandle);
+				LoggingInDelegateHandle.Reset();
+			}
+			OnLoginCompleted.Broadcast(false, "", "Login Failed Right Away!");
+		}
+	}
+}
+
+void UCGameInstance::LoginCompleted(int NumOfLocalPlayer, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error)
+{
+	if (IOnlineIdentityPtr IdentityPtr = UCNetStatics::GetIdentityPtr())
+	{
+		if (LoggingInDelegateHandle.IsValid())
+		{
+			IdentityPtr->OnLoginCompleteDelegates->Remove(LoggingInDelegateHandle);
+			LoggingInDelegateHandle.Reset();
+		}
+
+		FString PlayerNickname = "";
+		if (bWasSuccessful)
+		{
+			PlayerNickname = IdentityPtr->GetPlayerNickname(UserId);
+			UE_LOG(LogTemp, Warning, TEXT("Logged in succesfully as: %s"), *(PlayerNickname))
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Loging in failed: %s"), *(Error))
+		}
+
+		OnLoginCompleted.Broadcast(bWasSuccessful, PlayerNickname, Error);
+	}
+	else
+	{
+		OnLoginCompleted.Broadcast(false, "", "Ca't find the Identity Pointer");
+	}
+}
+
+void UCGameInstance::RequestCreateAndJoinSession(const FName& NewSessionName)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Requesting Create and Join Session: %s"), *(NewSessionName.ToString()))
+	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
+	FGuid SessionSearchId = FGuid::NewGuid();
+
+	FString CoordinatorURL = UCNetStatics::GetCoordinatorURL();
+
+	FString URL = FString::Printf(TEXT("%s/Sessions"), *CoordinatorURL);
+	UE_LOG(LogTemp, Warning, TEXT("Sending Request Session Creation to URL: %s"), *URL)
+
+	Request->SetURL(URL);
+	Request->SetVerb("POST");
+
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
+	JsonObject->SetStringField(UCNetStatics::GetSessionNameKey().ToString(), NewSessionName.ToString());
+	JsonObject->SetStringField(UCNetStatics::GetSessionSearchIdKey().ToString(), SessionSearchId.ToString());
+
+	FString RequestBoby;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBoby);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	Request->SetContentAsString(RequestBoby);
+	Request->OnProcessRequestComplete().BindUObject(this, &UCGameInstance::SessionCreationRequestCompleted, SessionSearchId);
+	
+	if (!Request->ProcessRequest())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Session Creation Request Failed Right Away!"))
+	}
+}
+
+void UCGameInstance::CancelSessionCreation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Canceling Session Creation"))
+}
+
+void UCGameInstance::SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully, FGuid SessionSearchId)
+{
+	if (!bConnectedSuccessfully)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Connection responded with connection was not successful!"))
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Connection to Coordinator Successfully!"))
 }
 
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
