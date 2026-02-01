@@ -48,8 +48,8 @@ private:
 	void StopFindingCreatedSession();
 	void StopGlobalSessionSearch();
 
-	FTimerHandle FindCreatedSesisonTimerHandle;
-	FTimerHandle FindCreatedSesisonTimeoutTimerHanle;
+	FTimerHandle FindCreatedSessionTimerHandle;
+	FTimerHandle FindCreatedSessionTimeoutTimerHandle;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
 	float FindCreatedSessionSearchInterval = 1.f;
@@ -59,6 +59,11 @@ private:
 
 	void FindCreatedSession(FGuid SessionSearchId);
 	void FindCreatedSessionTimeout();
+	void FindCreateSessionCompleted(bool bWasSuccessful);
+	void JoinSessionWithSearchResult(const class FOnlineSessionSearchResult& SearchResult);
+
+	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
+	
 /*************************************/
 /*         Session Server            */
 /*************************************/
