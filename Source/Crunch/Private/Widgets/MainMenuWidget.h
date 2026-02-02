@@ -50,7 +50,26 @@ private:
 
 	UFUNCTION()
 	void NewSessionNameTextChanged(const FText& NewText);
-	
+
+	void JoinSessionFailed();
+
+	void UpdateLobbyList(const TArray<FOnlineSessionSearchResult>& SearchResults);
+
+	UPROPERTY(meta=(BindWidget))
+	class UScrollBox* SessionScrollBox;
+
+	UPROPERTY(meta=(BindWidget))
+	class UButton* JoinSessionBtn;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Session")
+	TSubclassOf<class USessionEntryWidget> SessionEntryWidgetClass;
+
+	FString CurrentSelectedSessionId = "";
+
+	UFUNCTION()
+	void JoinSessionBtnClicked();
+
+	void SessionEntrySelected(const FString& SelectedEntryIdStr);
 
 	/******************************/	
 	/*           Login            */
