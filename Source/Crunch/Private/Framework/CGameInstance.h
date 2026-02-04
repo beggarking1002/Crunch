@@ -4,10 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Interfaces/IHttpResponse.h"
 #include "Interfaces/IHttpRequest.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "CGameInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompleted, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*ErrorMsg*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalSessionSearchCompleted, const TArray<FOnlineSessionSearchResult>& /*SearchResults*/)
+DECLARE_MULTICAST_DELEGATE(FOnJoinSesisonFailed);
 /**
  * 
  */
@@ -39,9 +43,38 @@ private:
 public:
 	void RequestCreateAndJoinSession(const FName& NewSessionName);
 	void CancelSessionCreation();
-
+	void StartGlobalSessionSearch();
+	bool JoinSessionWithId(const FString& SessionIdStr);
+	FOnJoinSesisonFailed OnJoinSessionFailed;
+	FOnGlobalSessionSearchCompleted OnGlobalSessionSearchCompleted;
 private:
 	void SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully, FGuid SessionSearchId);
+	void StartFindingCreatedSession(const FGuid& SessionSearchId);
+	void StopAllSessionFindings();
+	void StopFindingCreatedSession();
+	void StopGlobalSessionSearch();
+	void FindGlobalSessions();
+	void GlobalSessionSearchCompleted(bool bWasSuccessful);
+
+	FTimerHandle FindCreatedSessionTimerHandle;
+	FTimerHandle FindCreatedSessionTimeoutTimerHandle;
+	FTimerHandle GlobalSessionSearchTimerHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
+	float GlobalSessionSearchInterval = 2.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
+	float FindCreatedSessionSearchInterval = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
+	float FindCreatedSessionTimeoutDuration = 60.f;
+
+	void FindCreatedSession(FGuid SessionSearchId);
+	void FindCreatedSessionTimeout();
+	void FindCreateSessionCompleted(bool bWasSuccessful);
+	void JoinSessionWithSearchResult(const class FOnlineSessionSearchResult& SearchResult);
+	void JoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type JoinResult, int Port);
+	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 	
 /*************************************/
 /*         Session Server            */
