@@ -13,6 +13,7 @@ UGA_Combo::UGA_Combo()
 {
 	AbilityTags.AddTag(UCAbilitySystemStatics::GetBasicAttackAbilityTag());
 	BlockAbilitiesWithTag.AddTag(UCAbilitySystemStatics::GetBasicAttackAbilityTag());
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
 void UGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -46,7 +47,7 @@ void UGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		WaitTargetingEventTask->EventReceived.AddDynamic(this, &UGA_Combo::DoDamage);
 		WaitTargetingEventTask->ReadyForActivation();
 	}
-
+	NextComboName = NAME_None;
 	SetupWaitComboInputPress();
 }
 
