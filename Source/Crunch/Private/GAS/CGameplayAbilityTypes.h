@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffect.h"
-#include "CGameplayAbilitytypes.generated.h"
+#include "CGameplayAbilityTypes.generated.h"
 
 UENUM(BlueprintType)
 enum class ECAbilityInputID : uint8
