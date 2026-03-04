@@ -5,6 +5,14 @@ import re
 
 app=Flask(__name__)
 
+def GetUsedPorts():
+    result = subprocess.run(['docker', 'ps', '--format', '"{{.Ports}}"'], capture_output=True, text=True)
+    output = result.stdout
+    print(output)
+
+def CreateServerImpl(sesssionName, sessionSearchId):
+    port = GetUsedPorts()
+
 # TODO: Remove when using docker in the future
 nextAvailablePort = 7777
 
@@ -36,5 +44,6 @@ def CreateServer():
     return jsonify({"status": "success", PORT_KEY: port}), 200
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0", port=80)
+    app.run(host="0.0.0.0", port=5000)
+    CreateServerImpl("","")
 
