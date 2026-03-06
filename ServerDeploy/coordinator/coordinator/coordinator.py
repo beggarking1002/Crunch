@@ -36,7 +36,7 @@ def CreateServerImpl(sessionName, sessionSearchId):
         "--rm",
         "-p", f"{port}:{port}/tcp",
         "-p", f"{port}:{port}/udp",
-        "crunchserver",
+        "server",
         "-server",
         "-log",
         '-epicapp="ServerClient"',
